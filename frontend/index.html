@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix - Movie Streaming</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🎬 StreamFlix</h1>
+            <div class="nav-links">
+                <a href="#" onclick="showSection('browse')" class="nav-link">Browse</a>
+                <a href="#" onclick="showSection('recommended')" class="nav-link">For You</a>
+                <a href="#" onclick="showSection('history')" class="nav-link">History</a>
+                <a href="#" onclick="showSection('popular')" class="nav-link">Popular</a>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="username"></span>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login/Register Section -->
+    <section id="authSection" class="auth-section">
+        <div class="auth-container">
+            <h2>Welcome to StreamFlix</h2>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="showAuthTab('login')">Login</button>
+                <button class="tab-btn" onclick="showAuthTab('register')">Register</button>
+            </div>
+            
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Register</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent" style="display: none;">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search movies...">
+                <button onclick="searchMovies()" class="btn-search">Search</button>
+                <button onclick="clearSearch()" class="btn-clear">Clear</button>
+            </div>
+
+            <!-- Genre Filter -->
+            <div class="genre-filter">
+                <button onclick="filterByGenre('all')" class="genre-btn active">All</button>
+                <div id="genreButtons"></div>
+            </div>
+
+            <!-- Browse Movies Section -->
+            <section id="browseSection" class="content-section">
+                <h2>Browse Movies</h2>
+                <div id="moviesGrid" class="movies-grid"></div>
+            </section>
+
+            <!-- Recommended Section -->
+            <section id="recommendedSection" class="content-section" style="display: none;">
+                <h2>Recommended For You</h2>
+                <p class="section-desc">Based on your watch history and preferences</p>
+                <div id="recommendedGrid" class="movies-grid"></div>
+            </section>
+
+            <!-- Popular Section -->
+            <section id="popularSection" class="content-section" style="display: none;">
+                <h2>Most Popular</h2>
+                <p class="section-desc">Trending movies watched by everyone</p>
+                <div id="popularGrid" class="movies-grid"></div>
+            </section>
+
+            <!-- Watch History Section -->
+            <section id="historySection" class="content-section" style="display: none;">
+                <h2>Your Watch History</h2>
+                <div id="historyList" class="history-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Movie Detail Modal -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

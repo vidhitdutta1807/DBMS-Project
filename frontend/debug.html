@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Registration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Registration Debug Tool</h1>
+        <p>Use this to test registration and see detailed errors</p>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" id="username" value="debuguser" required>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" value="debug@test.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="password" value="debug123" required>
+            </div>
+            <button type="submit">Test Registration</button>
+            <button type="button" onclick="testAPI()">Test API Connection</button>
+            <button type="button" onclick="clearOutput()">Clear</button>
+        </form>
+
+        <div id="output" class="output">Click a button to start testing...</div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            let className = 'info';
+            if (type === 'success') className = 'success';
+            if (type === 'error') className = 'error';
+            
+            output.innerHTML += `\n[<span class="${className}">${timestamp}</span>] ${message}`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.innerHTML = 'Cleared. Click a button to start testing...';
+        }
+
+        // Test API Connection
+        async function testAPI() {
+            output.innerHTML = '';
+            log('Testing API connection...', 'info');
+            log(`API URL: ${API_URL}`, 'info');
+            
+            try {
+                log('Fetching movies list...', 'info');
+                const response = await fetch(`${API_URL}/movies`);
+                
+                if (response.ok) {
+                    const movies = await response.json();
+                    log(`✅ API is working! Found ${movies.length} movies`, 'success');
+                    log(`Response status: ${response.status}`, 'success');
+                } else {
+                    log(`❌ API returned error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Cannot reach API server!`, 'error');
+                log(`Error: ${error.message}`, 'error');
+                log(`Make sure backend is running on port 3000`, 'error');
+            }
+        }
+
+        // Test Registration
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            output.innerHTML = '';
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            log('📝 Starting registration test...', 'info');
+            log(`Username: ${username}`, 'info');
+            log(`Email: ${email}`, 'info');
+            log(`Password: ${password}`, 'info');
+            log('');
+            
+            // Step 1: Check API URL
+            log(`Step 1: Checking API URL...`, 'info');
+            log(`URL: ${API_URL}/auth/register`, 'info');
+            
+            // Step 2: Prepare request
+            log('Step 2: Preparing request...', 'info');
+            const requestData = { username, email, password };
+            log(`Request body: ${JSON.stringify(requestData)}`, 'info');
+            
+            // Step 3: Send request
+            log('Step 3: Sending POST request...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                log(`Step 4: Received response`, 'info');
+                log(`Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                log(`Headers: Content-Type = ${response.headers.get('content-type')}`, 'info');
+                
+                // Parse response
+                log('Step 5: Parsing response...', 'info');
+                const data = await response.json();
+                log(`Response data: ${JSON.stringify(data, null, 2)}`, 'info');
+                
+                if (response.ok) {
+                    log('', 'success');
+                    log('✅ REGISTRATION SUCCESSFUL!', 'success');
+                    log(`User ID: ${data.userId}`, 'success');
+                    log(`Message: ${data.message}`, 'success');
+                    log('', 'success');
+                    log('You can now login with these credentials', 'success');
+                } else {
+                    log('', 'error');
+                    log('❌ REGISTRATION FAILED!', 'error');
+                    log(`Error: ${data.error}`, 'error');
+                    log('', 'error');
+                    
+                    if (data.error.includes('exists')) {
+                        log('💡 This email or username already exists. Try a different one.', 'error');
+                    }
+                }
+                
+            } catch (error) {
+                log('', 'error');
+                log('❌ REQUEST FAILED!', 'error');
+                log(`Error type: ${error.name}`, 'error');
+                log(`Error message: ${error.message}`, 'error');
+                log('', 'error');
+                
+                if (error.message.includes('fetch')) {
+                    log('💡 Cannot connect to server. Make sure:', 'error');
+                    log('   1. Backend is running (npm start)', 'error');
+                    log('   2. Server is on http://localhost:3000', 'error');
+                    log('   3. No firewall blocking the connection', 'error');
+                }
+            }
+        });
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            log('Debug tool loaded. Testing API connection...', 'info');
+            testAPI();
+        });
+    </script>
+</body>
+</html>
